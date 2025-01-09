@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajax</title>
+  </head>
+  <body>
+    <script>
+      /*         1.- Obtener el usuario con id=5 de jsonplaceholder.typicode.com/users.
+Mostrar los datos del usuario en distintos <p> de un div de una página html: Nombre, usuario, correo y la dirección. */
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", "https://jsonplaceholder.typicode.com/users");
+      xhr.send();
+      xhr.addEventListener("readystatechange", (e) => {
+        if (xhr.readyState !== 4) return;
+        if (xhr.status >= 200 && xhr.status < 300) {
+          console.log("éxito");
+
+          let json = JSON.parse(xhr.responseText);
+          console.log(json);
+          json.forEach((el) => {
+            if (el.id == 5) {
+              const $div = document.createElement("div");
+              let p1 = document.createElement("p");
+              p1.textContent = "nombre: " + el.name;
+              $div.appendChild(p1);
+
+              let p2 = document.createElement("p");
+              p2.textContent = "usuario: " + el.username;
+              $div.appendChild(p2);
+
+              let p3 = document.createElement("p");
+              p3.textContent = "email: " + el.email;
+              $div.appendChild(p3);
+
+              let p4 = document.createElement("p");
+              p4.textContent = `Dirección: ${el.address.street}, ${el.address.suite}, ${el.address.city}`;
+              $div.appendChild(p4);
+              document.body.appendChild($div);
+            }
+          });
+        } else {
+          console.log("error");
+          let message = xhr.statusText || "Ocurrió un error";
+          $xhr.innerHTML = `Error ${xhr.status}: ${message}`;
+        }
+        console.log("Este mensaje cargará de cualquier forma");
+      });
+    </script>
+  </body>
+</html>

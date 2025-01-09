@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajax</title>
+    <style>
+      div {
+        border: 1px gray solid;
+      }
+      #resultado {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      #resultado div {
+        display: flex;
+        flex-direction: column;
+        padding: 2%;
+      }
+      img {
+        width: 220px;
+        height: 220px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Usuario</h1>
+
+    <div id="resultado"></div>
+    <script>
+      /*
+            8.- Avanzado. Queremos obtener datos aleatorios de 10 usuarios: https://randomuser.me/api/?results=10.
+      Mostraremos la foto y su nombre, apellidos, correo, dirección y ciudad.. En html tenemos una capa div. Para cada
+      usuario tendremos que crear un div desde js, y unirlo al div de la página html.
+      Cada usuario, tendrá un botón para poder cambiar aleatorioamente ese usuario.
+      Hacerlo con fetch y promesas.
+       */
+
+      async function fetchData(e) {
+        e.preventDefault();
+
+        try {
+          const response = await fetch("https://randomuser.me/api/?results=10");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json(); // Espera y procesa el JSON console.log(data); // Muestra los datos obtenidos
+
+          console.log(data);
+          let div = document.getElementById("resultado");
+          let contador = 0;
+          data.results.forEach((element) => {
+            let divUser = document.createElement("div");
+            divUser.setAttribute("id", contador);
+            contador++;
+            let p1 = document.createElement("p");
+            p1.textContent =
+              "Nombre: " + element.name.first + " " + element.name.last;
+            divUser.appendChild(p1);
+
+            let p2 = document.createElement("p");
+            p2.textContent = "Correo: " + element.email;
+            divUser.appendChild(p2);
+
+            let p3 = document.createElement("p");
+            p3.textContent = "Ciudad: " + element.location.city;
+            divUser.appendChild(p3);
+
+            let imagen = document.createElement("img");
+            imagen.setAttribute("src", element.picture.large);
+            divUser.appendChild(imagen);
+
+            let boton = document.createElement("button");
+            boton.textContent = "Cambiar";
+            boton.addEventListener("click", cambiarUsuario);
+            divUser.appendChild(boton);
+            div.appendChild(divUser);
+          });
+        } catch (error) {
+          console.error("Error al realizar la solicitud:", error); // Manejo de errores
+        }
+      }
+
+      async function cambiarUsuario(e) {
+        e.preventDefault();
+
+        try {
+          const response = await fetch("https://randomuser.me/api/");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json(); // Espera y procesa el JSON console.log(data); // Muestra los datos obtenidos
+
+          console.log(data);
+          let padreDiv = document.getElementById(e.target.parentElement.id);
+          padreDiv.innerHTML = ""; //limpiar
+          let p1 = document.createElement("p");
+          p1.textContent =
+            "Nombre: " +
+            data.results[0].name.first +
+            " " +
+            data.results[0].name.last;
+          padreDiv.appendChild(p1);
+
+          let p2 = document.createElement("p");
+          p2.textContent = "Correo: " + data.results[0].email;
+          padreDiv.appendChild(p2);
+
+          let p3 = document.createElement("p");
+          p3.textContent = "Ciudad: " + data.results[0].location.city;
+          padreDiv.appendChild(p3);
+
+          let imagen = document.createElement("img");
+          imagen.setAttribute("src", data.results[0].picture.large);
+          padreDiv.appendChild(imagen);
+
+          let boton = document.createElement("button");
+          boton.textContent = "Cambiar";
+          boton.addEventListener("click", cambiarUsuario);
+          padreDiv.appendChild(boton);
+        } catch (error) {
+          console.error("Error al realizar la solicitud:", error); // Manejo de errores
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", fetchData);
+    </script>
+  </body>
+</html>

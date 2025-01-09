@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajax</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header id="header"></header>
+    <section id="section"></section>
+
+    <script>
+      /*
+      13. Nos conectaremos a la api: https://mdn.github.io/learning-area/javascript/oojs/json/superheroes.json
+Una vez obtenidos los datos, cargaremos en la cabecera header una etiqueta h1 con el nombre del equipo. Y un
+párrafo <p> con la ciudad y el año en que se formó.
+En la sección section, cargaremos los miembros del equipo. Cada uno en un div. Dentro del div, habrá la siguiente
+información:
+• En <h2> : el nombre del superheroe.
+• En un <p> la identidad secreta.
+• En un <p> la edad.
+• En un <p> el titulo: superpoderes
+• En una lista ul, la lista de los superpoderes,
+ */
+
+      var header = document.getElementById("header");
+      var section = document.getElementById("section");
+
+      async function inicio() {
+        try {
+          const response = await fetch(
+            "https://mdn.github.io/learning-area/javascript/oojs/json/superheroes.json"
+          );
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log(data);
+
+          let h1 = document.createElement("h1");
+          h1.textContent = data.squadName;
+          header.appendChild(h1);
+
+          let p1 = document.createElement("p");
+          p1.textContent = "Ciudad: " + data.homeTown;
+          header.appendChild(p1);
+
+          let p2 = document.createElement("p");
+          p2.textContent = "Año de fundación: " + data.formed;
+          header.appendChild(p2);
+
+          data.members.forEach((el) => {
+            let h2 = document.createElement("h2");
+            h2.textContent = "Nombre: " + el.name;
+            section.appendChild(h2);
+
+            let p1 = document.createElement("p");
+            p1.textContent = "Edad: " + el.age;
+            section.appendChild(p1);
+
+            let p2 = document.createElement("p");
+            p2.textContent = "Identidad Secreta: " + el.secretIdentity;
+            section.appendChild(p2);
+
+            let p3 = document.createElement("p");
+            p3.textContent = "Superpoderes: ";
+            section.appendChild(p3);
+
+            let ul = document.createElement("ul");
+            section.appendChild(ul);
+
+            el.powers.forEach((po) => {
+              let li = document.createElement("li");
+              li.textContent = po;
+              ul.appendChild(li);
+            });
+          });
+        } catch (error) {
+          console.error("Error al realizar la solicitud:", error); // Manejo de errores
+        }
+      }
+      inicio();
+    </script>
+  </body>
+</html>

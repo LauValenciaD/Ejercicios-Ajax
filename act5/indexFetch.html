@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajax</title>
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Tabla notas</h1>
+    <table id="studentTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Grades</th>
+          <th>Average</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <script>
+      /*       5. Crear un fichero json en vuestro proyecto con nombre data.json.
+           Crear un objeto literal students que será un array de objetos literales.
+           Dentro de cada objeto habrá información de cada alumno: id: numero, nombre:cadena y notas, que será un array de 4 notas. Crear datos para 5 alumnos en el fichero.
+           Crear un ficheros js que haga una llamada ajax a dicho fichero y crear una tabla con la información de los alumnos con 4 columnas: ID , nombre, notas, que aparecerán separadas por comas y la última columna será la media de notas.
+
+      */
+      fetch("data.json")
+        .then((response) => {
+          if (!response.ok) throw new Error("Error en la respuesta de la API");
+          return response.json(); // Convierte la respuesta en un objeto JSON
+        })
+        .then((json) => {
+          console.log(json);
+
+          let tbody = document.getElementsByTagName("tbody")[0];
+          json.students.forEach((el) => {
+            let fila = document.createElement("tr");
+
+            let columna1 = document.createElement("td");
+            columna1.textContent = el.id;
+            fila.appendChild(columna1);
+
+            let columna2 = document.createElement("td");
+            columna2.textContent = el.nombre;
+            fila.appendChild(columna2);
+
+            let columna3 = document.createElement("td");
+            columna3.textContent = el.notas.join(", ");
+            fila.appendChild(columna3);
+
+            let media = 0;
+            el.notas.forEach((nota) => {
+              media += nota;
+            });
+            media = media / el.notas.length;
+            let columna4 = document.createElement("td");
+            columna4.textContent = media;
+            fila.appendChild(columna4);
+            tbody.appendChild(fila);
+          });
+        })
+        .catch((error) => console.log("Error:", error));
+    </script>
+  </body>
+</html>

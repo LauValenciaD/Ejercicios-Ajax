@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!--     Ejercicio 1. Vamos a cargar los datos de una receta que nos devuelve la siguiente api:
+https://www.themealdb.com/api/json/v1/1/random.php. Elegid la forma de ajax que prefiráis.
+La página html debe tener un botón que al pulsar, conectará con la api.
+Los datos a mostrar serán:
+• El título de la receta en h2
+• En una capa irá:
+◦ La imagen (atributo strMealThumb de la api)
+◦ Una lista de los ingredientes. Será una lista ordenada. Como máximo hay 20
+ingredientes, mostrar sólo los que tengan valor. (atributos strIngredientX)
+◦ Un enlace a la web de la receta. (atributo strSource). Debe abrir la web en
+otra página.
+En caso de error, mostrar en datos un mensaje “Error al obtener la receta.” -->
+  </head>
+  <body>
+    <h2 id="titulo">Receta Aleatoria</h2>
+    <button id="boton">Mostrar receta</button>
+    <script>
+      function inicio() {
+        document.getElementById("boton").addEventListener("click", fetchData);
+      }
+
+      async function fetchData() {
+        try {
+          const response = await fetch(
+            "https://www.themealdb.com/api/json/v1/1/random.php"
+          );
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log(data.meals[0]);
+          const menu = data.meals[0];
+
+          const $div = document.createElement("div");
+          document.getElementById("titulo").textContent = menu.strMeal;
+
+          let foto = document.createElement("img");
+          foto.src = menu.strMealThumb;
+          foto.style.width = "200px";
+          $div.appendChild(foto);
+
+          let ol = document.createElement("ol");
+          for (let i = 1; i <= 20; i++) {
+            if (
+              menu["strIngredient" + i].trim() != "" &&
+              menu["strIngredient" + i]
+            ) {
+              //MUY IMPORTANTE PARA CONCATENAR EN OBJETOS
+              let lista = document.createElement("li");
+              lista.textContent = menu["strIngredient" + i];
+              console.log(menu["strIngredient" + i]);
+
+              ol.appendChild(lista);
+            }
+          }
+          $div.appendChild(ol);
+          let enlace = document.createElement("a");
+          enlace.src = menu.strSource;
+          $div.appendChild(enlace);
+          document.body.appendChild($div);
+        } catch (error) {
+          console.error("Error al realizar la solicitud:", error); // Manejo de errores
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", inicio);
+    </script>
+  </body>
+</html>

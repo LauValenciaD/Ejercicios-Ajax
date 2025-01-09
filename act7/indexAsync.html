@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajax</title>
+  </head>
+  <body>
+    <h1>Usuario</h1>
+    <button id="boton">Mostrar</button>
+    <div id="resultado"></div>
+    <script>
+      /*       7.- Obtener aleatoriamente datos de un usuario haciendo peticiones ajax sobre la api: https://randomuser.me/api/
+Necesitamos conocer: el nombre y apellidos, su correo y su ciudad. Además queremos ver su imagen.
+Crear un botón en html y una capa div. Cuando pulsemos el botón, mostraremos la información del usuario en la
+capa. Hacerlo con fetch y promesas.
+
+ */
+      const inicio = () => {
+        document.getElementById("boton").addEventListener("click", fetchData);
+      };
+      async function fetchData(e) {
+        e.preventDefault();
+
+        try {
+          const response = await fetch("https://randomuser.me/api/");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json(); // Espera y procesa el JSON console.log(data); // Muestra los datos obtenidos
+
+          console.log(data);
+          let div = document.getElementById("resultado");
+          div.innerHTML = ""; //limpiar
+          let p1 = document.createElement("p");
+          p1.textContent =
+            "Nombre: " +
+            data.results[0].name.first +
+            " " +
+            data.results[0].name.last;
+          div.appendChild(p1);
+
+          let p2 = document.createElement("p");
+          p2.textContent = "Correo: " + data.results[0].email;
+          div.appendChild(p2);
+
+          let p3 = document.createElement("p");
+          p3.textContent = "Ciudad: " + data.results[0].location.city;
+          div.appendChild(p3);
+
+          let imagen = document.createElement("img");
+          imagen.setAttribute("src", data.results[0].picture.large);
+          div.appendChild(imagen);
+        } catch (error) {
+          console.error("Error al realizar la solicitud:", error); // Manejo de errores
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", inicio);
+    </script>
+  </body>
+</html>

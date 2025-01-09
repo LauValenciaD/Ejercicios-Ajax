@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajax</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+      }
+      img {
+        height: 70vh;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Imagen del día de la NASA</h1>
+    <figure id="imagen"></figure>
+    <main>
+      <p>Cambiar fecha</p>
+      <input type="date" id="fecha" /> <br />
+    </main>
+
+    <script>
+      /*
+      11.- Vamos a conectarnos a un servicio de la NASA para poder ver la imagen de día. Para ello, vamos a registrarnos
+en: https://api.nasa.gov/index.html para obtener una api key.
+Nos vamos a conectar a la api: https://api.nasa.gov/planetary/apod?api_key=xxx&date=yyyy-mm-dd
+Donde la api_key es el valor obtenido, y la fecha será el día que queremos consultar en formato yyyy-mm-dd.
+Para ello, en html tendremos lo siguiente:
+      Cuando se cargue la página, con un prompt pedimos la api key. Y haremos la llamada a la api con la fecha de hoy.
+La imagen la tendremos que cargar en el id=”imagen”.
+Además, cuando el campo fecha cambie, haremos la llamada a la api con el día que haya en el input.
+Después de la llamada, tendremos que tomar el atributo url de la respuesta. Es la imagen que tendremos que cargar
+en el atributo src de la imagen
+       */
+      /* api key= grjYBgZ4ZpfCnxM5RTixbXRrr2WHUjETNXNirHNa */
+      const apikey = prompt("introduce la API KEY");
+      const fechaInput = document.getElementById("fecha");
+      let img = document.createElement("img");
+
+      async function inicio() {
+        cargarMapa(apikey);
+        fechaInput.addEventListener("blur", cambiarFecha);
+      }
+
+      async function cargarMapa(apikey) {
+        let fecha = new Date();
+
+        try {
+          const response = await fetch(
+            `https://api.nasa.gov/planetary/apod?api_key=${apikey}&date=${fecha.getFullYear()}-${
+              fecha.getMonth() + 1
+            }-${fecha.getDate()}`
+          );
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log(data);
+
+          // Mostrar el mapa en la etiqueta <img>
+
+          img.setAttribute("src", data.url);
+          let div = document.getElementById("imagen");
+          div.appendChild(img);
+        } catch (error) {
+          console.error("Error al realizar la solicitud:", error); // Manejo de errores
+        }
+      }
+
+      async function cambiarFecha() {
+        let nuevaFecha = new Date(fechaInput.value);
+        console.log(nuevaFecha);
+        try {
+          const response = await fetch(
+            `https://api.nasa.gov/planetary/apod?api_key=${apikey}&date=${nuevaFecha.getFullYear()}-${
+              nuevaFecha.getMonth() + 1
+            }-${nuevaFecha.getDate()}`
+          );
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log(data);
+
+          // Mostrar el mapa en la etiqueta <img>
+          img.setAttribute("src", data.url);
+        } catch (error) {
+          console.error("Error al realizar la solicitud:", error); // Manejo de errores
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", inicio);
+    </script>
+  </body>
+</html>

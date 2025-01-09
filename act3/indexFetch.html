@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajax</title>
+  </head>
+  <body>
+    <h1>¿SÍ O NO?</h1>
+    <button id="boton">Mostrar</button>
+    <div id="resultado"></div>
+    <script>
+      /*       3.- Crear una página html con un <h1> ¿Sí o No?. Tendrá un botón y un p para mostrar ahí la respuesta. 
+        Cuando pulsemos el botón, se conectará con la api yesno.wtf/api para obtener la respuesta Si o No.
+Crear otra página html2 igual a la anterior, tal que al pulsar el botón, cargaremos en el resultado la imagen que devuelva.
+ */
+      const inicio = () => {
+        document.getElementById("boton").addEventListener("click", fetchData);
+      };
+      function fetchData(e) {
+        e.preventDefault();
+        fetch("https://yesno.wtf/api")
+          .then((response) => {
+            if (!response.ok)
+              throw new Error("Error en la respuesta de la API");
+            return response.json(); // Convierte la respuesta en un objeto JSON
+          })
+          .then((data) => {
+            console.log(data);
+            let div = document.getElementById("resultado");
+            div.innerHTML = ""; //limpiar
+            let p = document.createElement("p");
+            p.textContent = data.answer;
+            div.appendChild(p);
+            let imagen = document.createElement("img");
+            imagen.setAttribute("src", data.image);
+            div.appendChild(imagen);
+          })
+          .catch((error) => console.log("Error:", error));
+      }
+
+      window.addEventListener("DOMContentLoaded", inicio);
+    </script>
+  </body>
+</html>

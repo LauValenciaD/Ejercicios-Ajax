@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajax</title>
+    <style>
+      div {
+        border: 1px gray solid;
+      }
+      #resultado {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      #resultado div {
+        display: flex;
+        flex-direction: column;
+        padding: 2%;
+      }
+      img {
+        width: 220px;
+        height: 220px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="blog-container">
+      <h1>Blog</h1>
+      <div id="posts-list"></div>
+      <button id="load-more-btn">Load More</button>
+      <div id="post-details"></div>
+      <input type="text" id="search-input" placeholder="Search ... " />
+      <button id="search-btn">Search</button>
+      <div id="loading-spinner" class="spinner"></div>
+    </div>
+    <script>
+      /*
+              9.- Vamos a crear un blog. La página HTML tiene un título en h1, un botón (Load more) y un buscador.
+• Por defecto, al entrar, se usará la api: jsonplaceholder.typicode.com/posts?_page=1&_limit=5 para
+mostrar 5 posts, con su título y cuerpo. Los posts irán en la capa con id=”posts-list” de la página html.
+Cada post será un div que colgará de la capa con id=”posts-list”
+
+• El botón ‘Load More’, cargará otros nuevos 5 posts, en la misma capa del punto anterior. Pero la llamada a
+la api varía, y cada vez que pulsemos el botón, cambiaremos a la pagina siguiente, es decir:
+jsonplaceholder.typicode.com/posts?_page=2&_limit=5
+El atributo page varia cada vez que pulsemos el botón.
+
+• Cuando se pulse sobre cada post, hará otra petición ajax a los comentarios del post. Para ello es importante
+saber el id del post. Api: /posts/id_del_post/comments .
+Los comentarios irán en la capa con id=”post-details”, debajo del botón Load More. Cada comentario será
+un div que colgará de la capa con id =”post-details”.
+
+• El buscador podrá cargar en la capa con id=”post-details”, el post cuyo numero indiquemos en el cuadro de
+texto. Si no se escribe ningún número, se avisará con mensaje alert.
+NOTA: Hacer las peticiones ajax con api fetch y await.
+       */
+      var pagina = 1;
+      const inicio = () => {
+        fetchInicio();
+        let botonLoad = document.getElementById("load-more-btn");
+        botonLoad.addEventListener("click", fetchData);
+
+        let botonSearch = document.getElementById("search-btn");
+        botonSearch.addEventListener("click", buscar);
+      };
+
+      function fetchData(e) {
+        e.preventDefault();
+        pagina++;
+        console.log(pagina);
+        console.log("pasando pagina");
+        fetch(
+          `https://jsonplaceholder.typicode.com/posts?_page=${pagina}&_limit=5`
+        )
+          .then((response) => {
+            if (!response.ok)
+              throw new Error("Error en la respuesta de la API");
+            return response.json(); // Convierte la respuesta en un objeto JSON
+          })
+
+          .then((data) => {
+            console.log(data);
+
+            let div = document.getElementById("posts-list");
+            div.innerHTML = ""; //limpiar
+            data.forEach((element) => {
+              let divTexto = document.createElement("div");
+              divTexto.setAttribute("id", element.id);
+              divTexto.addEventListener("click", cargarComentario);
+              let p1 = document.createElement("p");
+              p1.textContent = "Título: " + element.title;
+              divTexto.appendChild(p1);
+
+              let p2 = document.createElement("p");
+              p2.textContent = "Body: " + element.body;
+              divTexto.appendChild(p2);
+              div.appendChild(divTexto);
+            });
+          })
+          .catch((error) => console.log("Error:", error));
+      }
+
+      function fetchInicio() {
+        fetch(
+          `https://jsonplaceholder.typicode.com/posts?_page=${pagina}&_limit=5`
+        )
+          .then((response) => {
+            if (!response.ok)
+              throw new Error("Error en la respuesta de la API");
+            return response.json(); // Convierte la respuesta en un objeto JSON
+          })
+
+          .then((data) => {
+            console.log(data);
+            let div = document.getElementById("posts-list");
+            div.innerHTML = ""; //limpiar
+
+            data.forEach((element) => {
+              let divTexto = document.createElement("div");
+              divTexto.setAttribute("id", element.id);
+              divTexto.addEventListener("click", cargarComentario);
+
+              let p1 = document.createElement("p");
+              p1.textContent = "Título: " + element.title;
+              divTexto.appendChild(p1);
+
+              let p2 = document.createElement("p");
+              p2.textContent = "Body: " + element.body;
+              divTexto.appendChild(p2);
+              div.appendChild(divTexto);
+            });
+            console.log(pagina);
+            console.log("mensaje inicio");
+          })
+          .catch((error) => console.log("Error:", error));
+      }
+
+      function cargarComentario(e) {
+        console.log(e.target.parentElement.id);
+        fetch(
+          `https://jsonplaceholder.typicode.com/posts/${e.target.parentElement.id}/comments`
+        )
+          .then((response) => {
+            if (!response.ok)
+              throw new Error("Error en la respuesta de la API");
+            return response.json(); // Convierte la respuesta en un objeto JSON
+          })
+
+          .then((data) => {
+            console.log("hiciste click");
+            let div = document.getElementById("post-details");
+            div.innerHTML = ""; //limpiar
+            let titulo = document.createElement("h2");
+            titulo.textContent =
+              "Comentarios del post " + e.target.parentElement.id;
+            div.appendChild(titulo);
+
+            data.forEach((element) => {
+              let divTexto = document.createElement("div");
+              divTexto.setAttribute("id", element.id);
+
+              let p1 = document.createElement("p");
+              p1.textContent = "Nombre: " + element.name;
+              divTexto.appendChild(p1);
+
+              let p2 = document.createElement("p");
+              p2.textContent = "Email: " + element.email;
+              divTexto.appendChild(p2);
+
+              let p3 = document.createElement("p");
+              p3.textContent = "Comentario: " + element.body;
+              divTexto.appendChild(p3);
+              div.appendChild(divTexto);
+            });
+          })
+          .catch((error) => console.log("Error:", error));
+      }
+
+      function buscar(e) {
+        e.preventDefault();
+        let busqueda = document.getElementById("search-input");
+        console.log(busqueda.value);
+        if (busqueda.value == "") {
+          alert("No has escrito nada.");
+        } else {
+          fetch(`https://jsonplaceholder.typicode.com/posts/${busqueda.value}`)
+            .then((response) => {
+              if (!response.ok)
+                throw new Error("Error en la respuesta de la API");
+              return response.json(); // Convierte la respuesta en un objeto JSON
+            })
+
+            .then((data) => {
+              console.log("busqueda");
+              let div = document.getElementById("post-details");
+              div.innerHTML = ""; //limpiar
+              let titulo = document.createElement("h2");
+              titulo.textContent = "Post encontrado: Post " + data.id;
+              div.appendChild(titulo);
+
+              let divTexto = document.createElement("div");
+              divTexto.setAttribute("id", data.id);
+
+              let p1 = document.createElement("p");
+              p1.textContent = "Título: " + data.title;
+              divTexto.appendChild(p1);
+
+              let p2 = document.createElement("p");
+              p2.textContent = "Body: " + data.body;
+              divTexto.appendChild(p2);
+              div.appendChild(divTexto);
+            })
+            .catch((error) => console.log("Error:", error));
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", inicio);
+    </script>
+  </body>
+</html>
