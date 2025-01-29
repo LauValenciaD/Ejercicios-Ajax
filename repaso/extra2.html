@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+    <!--     Ejercicio 2. Vamos a ver todos los personajes de la serie Rick and Morty, conectándonos a la api:
+https://rickandmortyapi.com/api/character/. Usar la forma de Ajax que prefiráis.
+En la página html habrá un botón que hará la petición a la api.
+Para cada personaje, tendremos que mostrar su imagen y su información: El id, el nombre, el
+estado, la especie, y el número total de episodios en los que aparece el personaje. Para ello, desde
+javaScript crearemos:
+A) Una capa principal div ( con la clase de estilo=”character-row“ ) por linea. Dentro de la
+capa div, irán 3 personajes.
+B) Cada personaje será una capa div (con clase de estilo=”character-container”).
+Esta capa con cada personaje tendrá:
+◦ la imagen (campo image), con una clase de estilo=”character-image” y
+◦ otra capa con la información, que tendrá la clase de estilo =”character-info”. Esta
+información consiste en mostrar: El id, el nombre, el estado, la especie, y el número total
+de episodios en los que aparece el personaje.
+Esta información se tiene que cargar en un div de la página html. Es decir, la capa principal (A), que
+contiene todo es la que tendrá que engancharse a la capa de la página html. -->
+  </head>
+  <body>
+    <h2 id="titulo">Personajes de Rick and Morty</h2>
+    <button id="boton">Mostrar personajes</button>
+    <div id="resultado"></div>
+    <script>
+      const inicio = () => {
+        document.getElementById("boton").addEventListener("click", fetchData);
+      };
+      var contador = 0;
+
+      async function fetchData() {
+        try {
+          const response = await fetch(
+            "https://rickandmortyapi.com/api/character/"
+          );
+          if (!response.ok) {
+            throw new Error(`Error ${response.status}`);
+          }
+          const data = await response.json();
+          console.log(data);
+          document.getElementById("resultado").innerHTML = ""; //no olvidar limpiar cada vez que se pulse el boton
+          for (let i = 0; i < 3; i++) {
+            let divFila = document.createElement("div");
+            divFila.className = "character-row";
+            document.getElementById("resultado").appendChild(divFila);
+
+            for (let j = 0; j < 3; j++) {
+              if (contador > 19) {
+                contador = 0;
+              }
+              let divPersonaje = document.createElement("div");
+              divPersonaje.className = "character-container";
+              divFila.appendChild(divPersonaje);
+
+              let foto = document.createElement("img");
+              foto.className = "character-image";
+              foto.src = data.results[contador].image;
+              divPersonaje.appendChild(foto);
+
+              let divInfo = document.createElement("div");
+              divInfo.className = "character-info";
+              divPersonaje.appendChild(divInfo);
+
+              let pId = document.createElement("p");
+              pId.textContent = "Id: " + data.results[contador].id;
+              divInfo.appendChild(pId);
+
+              let p1 = document.createElement("p");
+              p1.textContent = "Nombre: " + data.results[contador].name;
+              divInfo.appendChild(p1);
+
+              let p2 = document.createElement("p");
+              p2.textContent = "Estado: " + data.results[contador].status;
+              divInfo.appendChild(p2);
+
+              let p3 = document.createElement("p");
+              p3.textContent = "Especie: " + data.results[contador].species;
+              divInfo.appendChild(p3);
+
+              let p4 = document.createElement("p");
+              p4.textContent =
+                "Episodios: " + data.results[contador].episode.length;
+              divInfo.appendChild(p4);
+              contador++;
+            }
+          }
+        } catch (error) {
+          console.error("Error", error);
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", inicio);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajax</title>
+  </head>
+  <body>
+    <h1>POSTS</h1>
+    <button id="boton">Mostrar</button>
+    <div id="tablaContainer"></div>
+    <script>
+      /*         2.- Crear una página html con un <H1> POSTS </H1> y un botón.
+      Cuando pulsemos un botón vamos a llamar a la api: jsonplaceholder.typicode.com/posts , y vamos a pintar el resultado en una tabla.
+      Sacar en cada fila el title y el body, cada uno en una columna diferente. */
+
+      const inicio = () => {
+        document.getElementById("boton").addEventListener("click", xhrFunction);
+      };
+      const xhrFunction = () => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://jsonplaceholder.typicode.com/posts");
+        xhr.send();
+
+        xhr.addEventListener("readystatechange", (e) => {
+          if (xhr.readyState !== 4) return;
+
+          if (xhr.status >= 200 && xhr.status < 300) {
+            let json = JSON.parse(xhr.responseText);
+            console.log(json);
+            let div = document.getElementById("tablaContainer");
+            div.innerHTML = "";
+            let tabla = document.createElement("table");
+            let thead = document.createElement("thead");
+            let title = document.createElement("th");
+            title.textContent = "Title";
+            let bodyt = document.createElement("th");
+            bodyt.textContent = "Body";
+
+            thead.appendChild(title);
+            thead.appendChild(bodyt);
+            tabla.appendChild(thead);
+
+            let tbody = document.createElement("tbody");
+            tabla.appendChild(tbody);
+
+            json.forEach((el) => {
+              let fila = tbody.insertRow(-1);
+              let celda1 = fila.insertCell(-1);
+              celda1.textContent = el.title;
+
+              let celda2 = fila.insertCell(-1);
+              celda2.textContent = el.body;
+            });
+
+            div.appendChild(tabla);
+          } else {
+            console.log("error" + xhr.status);
+          }
+        });
+      };
+      window.addEventListener("DOMContentLoaded", inicio);
+    </script>
+  </body>
+</html>

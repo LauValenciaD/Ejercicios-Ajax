@@ -69,7 +69,7 @@
           } else {
             console.log("error");
             let message = xhr.statusText || "Ocurrió un error";
-            $xhr.innerHTML = `Error ${xhr.status}: ${message}`;
+            document.body.innerHTML += `Error ${xhr.status}: ${message}`;
           }
           console.log("Este mensaje cargará de cualquier forma");
         });
